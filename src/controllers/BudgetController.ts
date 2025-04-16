@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
 import Budget from '../models/Bugdet';
+import Expense from '../models/Expense';
 
 
 
@@ -32,8 +33,12 @@ export class BudgetController {
         }
 
     }
+    //Trae todos los gastos de un presupuesto
     static getById = async (req: Request, res: Response) => {
-            res.json(req.budget);
+            const budget= await Budget.findByPk(req.budget.id, {
+                include:[Expense]
+            })
+            res.json(budget);
     }
 
 
