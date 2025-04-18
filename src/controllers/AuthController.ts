@@ -1,9 +1,11 @@
 import  { Request, RequestHandler, Response } from "express";
+import  jwt  from 'jsonwebtoken';
 import User from "../models/User";
 import { checkPassword, hashPassword } from "../utils/auth";
 import { generateToken } from "../utils/token";
 import { AuthEmail } from "../emails/Authemail";
 import { generateJWT } from "../utils/jwt";
+import { autenticate } from "../middleware/auth";
 
 export class AuthController {
     static createAccount:RequestHandler = async (req: Request, res: Response)=> {
@@ -131,4 +133,10 @@ export class AuthController {
             res.json('El password se ha reestablecido correctamente')
             return; 
     }
+
+    static user:RequestHandler = async (req: Request, res: Response)=> {
+        //Autenticacion de usuario
+        res.json(req.user);
+    }
+
 }
