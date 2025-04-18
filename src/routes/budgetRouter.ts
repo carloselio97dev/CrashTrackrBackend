@@ -7,7 +7,6 @@ import { ExpensesController } from '../controllers/ExpensesController';
 import { validateExpenseExist, validateExpenseId, validateExpenseInput } from '../middleware/expense';
 
 const router= Router();
-
 //Validar que el ID del presupuesto sea un entero positivo  y que exista en la base de datos
 router.param('budgetId', validateBugdetId)
 router.param('budgetId', validateBudgetExist)
