@@ -12,8 +12,10 @@ export class BudgetController {
                 order: [
                     ['createdAt', 'DESC']
                 ],
-                //TODO: FILTRAR POR EL USUARIO AUTENTICADO
-
+               
+                where:{
+                    userId:req.user.id
+                }
             })
             res.json(budgets)
         } catch (error) {
@@ -22,13 +24,16 @@ export class BudgetController {
         }
     }
     static create = async (req: Request, res: Response) => {
+     
         try {
             const budget = new Budget(req.body);
+            budget.userId=req.user!.id;
+
             await budget.save();
             res.status(201).json('Presupeusto Creado con Exito');
 
         } catch (error) {
-            //console.log(error);
+            console.log(error);
             res.status(500).json({ error: "Error al crear el presupuesto" });
         }
 
@@ -38,6 +43,7 @@ export class BudgetController {
             const budget= await Budget.findByPk(req.budget.id, {
                 include:[Expense]
             })
+           
             res.json(budget);
     }
 

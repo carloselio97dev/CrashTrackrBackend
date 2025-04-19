@@ -2,14 +2,18 @@ import { Router } from 'express';
 import { body, param } from 'express-validator';
 import { BudgetController } from '../controllers/BudgetController';
 import { handleInputsErrors } from '../middleware/validations';
-import { validateBudgetExist, validateBudgetInput, validateBugdetId } from '../middleware/bugdet';
+import { hasAccess, validateBudgetExist, validateBudgetInput, validateBugdetId } from '../middleware/bugdet';
 import { ExpensesController } from '../controllers/ExpensesController';
 import { validateExpenseExist, validateExpenseId, validateExpenseInput } from '../middleware/expense';
+import { autenticate } from '../middleware/auth';
 
 const router= Router();
+
+router.use(autenticate); //Genera el req.user 
 //Validar que el ID del presupuesto sea un entero positivo  y que exista en la base de datos
 router.param('budgetId', validateBugdetId)
-router.param('budgetId', validateBudgetExist)
+router.param('budgetId', validateBudgetExist) //Genera req.budget
+router.param('budgetId', hasAccess);
 
 router.param('expenseId', validateExpenseId);
 router.param('expenseId', validateExpenseExist);
