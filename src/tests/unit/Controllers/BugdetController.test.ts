@@ -1,21 +1,23 @@
 // Importar utilidades para simular peticiones HTTP y respuestas para pruebas
 import { createRequest, createResponse } from 'node-mocks-http'
 // Importar datos simulados para las pruebas
-import { budgets } from '../mocks/budgets'
+import { budgets } from '../../mocks/budgets'
 // Importar el modelo Budget que será mockeado
-import Budget from '../../models/Bugdet'  // NOTA: Hay un error de escritura aquí, debería ser "Budget"
+import Budget from '../../../models/Bugdet'  // NOTA: Hay un error de escritura aquí, debería ser "Budget"
 // Importar el controlador que vamos a probar
-import { BudgetController } from '../../controllers/BudgetController'
+import { BudgetController } from '../../../controllers/BudgetController'
+import Expense from '../../../models/Expense';
 
 /**
  * CONFIGURACIÓN INICIAL DE PRUEBAS
  * Reemplazamos completamente el modelo Budget con un mock
  * Esto nos permite controlar su comportamiento sin usar una base de datos real
  */
-jest.mock('../../models/Bugdet', () => ({
+jest.mock('../../../models/Bugdet', () => ({
     // Mockeamos los métodos que necesitamos para las pruebas
     findAll: jest.fn(),
-    create: jest.fn() // Mock del método create para la prueba de creación
+    create: jest.fn() ,
+    findByPk:jest.fn()
 }));
 
 /**
@@ -237,3 +239,120 @@ describe('BudgetController.create', () => {
         expect(Budget.create).toHaveBeenCalledWith(req.body);
     });
 });
+
+describe('BudgetController.getById', () => {
+
+    beforeEach(()=>{
+        (Budget.findByPk as jest.Mock).mockImplementation(id =>{
+            const budget= budgets.filter(b=> b.id===id)[0];
+            return Promise.resolve(budget);
+        })
+    })
+
+    it('should return a budget with ID 1 and 3 expenes', async ()=>{
+
+        const req=createRequest({
+            method:'GET',
+            url:'/api/budgets/:budgetId',
+            budget:{id:1}
+        })
+
+        const res= createResponse();
+        await BudgetController.getById(req, res);
+
+        const data=res._getJSONData();
+
+        expect(res.statusCode).toBe(200);
+        expect(data.expenses).toHaveLength(3);
+        expect(Budget.findByPk).toHaveBeenCalled();
+        expect(Budget.findByPk).toHaveBeenCalledTimes(1);
+        expect(Budget.findByPk).toHaveBeenCalledWith(req.budget.id,{
+            include:[Expense]
+        })
+    })
+
+    it('should return a budget with ID 2 and 2 expenes', async ()=>{
+
+        const req=createRequest({
+            method:'GET',
+            url:'/api/budgets/id',
+            budget:{id:2}
+        })
+
+        const res= createResponse();
+        await BudgetController.getById(req, res);
+
+        const data=res._getJSONData();
+
+        expect(res.statusCode).toBe(200);
+        expect(data.expenses).toHaveLength(2);
+    })
+
+    it('should return a budget with ID 3 and 0 expenes', async ()=>{
+
+        const req=createRequest({
+            method:'GET',
+            url:'/api/budgets/id',
+            budget:{id:3}
+        })
+
+        const res= createResponse();
+        await BudgetController.getById(req, res);
+
+        const data=res._getJSONData();
+
+        expect(res.statusCode).toBe(200);
+        expect(data.expenses).toHaveLength(0);
+    })
+ });
+
+ describe('Budget Controller.updateByID', () => { 
+    it('should update the budget and return a success message', async ()=>{
+        const budgetMock={
+            update:jest.fn().mockResolvedValue(true)
+        }
+
+        const req=createRequest({
+            method:'PUT',
+            url:'/api/budgets/:budgetId',
+            budget:budgetMock,
+            body:{name:'Presupuesto Actualizado', amount:5000}
+        })
+        const res=createResponse();
+        await BudgetController.updateById(req,res);
+
+        const data=res._getJSONData();
+
+        expect(res.statusCode).toBe(200);
+        expect(data).toBe("Presupuesto Actualizado Correctamente");
+        expect(budgetMock.update).toHaveBeenCalled();
+        expect(budgetMock.update).toHaveBeenCalledTimes(1);
+        expect(budgetMock.update).toHaveBeenCalledWith(req.body);
+    })
+  })
+
+  describe('Budget Controlle.deleteById',()=>{
+    it('should delete the budget and return a success message', async () =>{
+        const budgetMock={
+            destroy:jest.fn().mockResolvedValue(true)
+        }
+
+        const req=createRequest({
+            method:'DELETE',
+            url:'/api/budgets/:budgetId',
+            budget:budgetMock
+        })
+
+        const res=createResponse();
+
+        await BudgetController.deleteById(req,res);
+
+        const data=res._getJSONData();
+
+        expect(res.statusCode).toBe(200);
+        expect(data).toBe("Presupuesto Eliminado Correctamente");
+        expect(budgetMock.destroy).toHaveBeenCalled;
+        expect(budgetMock.destroy).toHaveBeenCalledTimes(1);
+    });
+
+})

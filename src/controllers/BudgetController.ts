@@ -53,7 +53,7 @@ export class BudgetController {
          //Escribir los cambios del Body 
          await req.budget.update(req.body);
          //Guardar los cambios en la base de datos
-         res.json('Presupuest Actualizado Correctamente')
+         res.json('Presupuesto Actualizado Correctamente')
 
     }
     static deleteById = async (req: Request, res: Response) => {
