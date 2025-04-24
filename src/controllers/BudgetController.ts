@@ -5,8 +5,9 @@ import Expense from '../models/Expense';
 
 
 export class BudgetController {
-
+   
     static getAll = async (req: Request, res: Response) => {
+        console.log("Hola");
         try {
             const budgets = await Budget.findAll({
                 order: [
