@@ -60,22 +60,22 @@ describe('ExpressController.create', () => {
     });
 });
 
-describe('Expensess.getById',()=>{
+describe('ExpensesController.getById',()=>{
 
     it('should return a expense with ID 1 ', async ()=>{
 
         const req=createRequest({
             method:'GET',
             url:'/api/budgets/:budgetId/expenses/:expenseId',
-            expenses:expenses[0]
+            expense:expenses[0]
         })
         
         const res=createResponse();
+
         await ExpensesController.getById(req,res);
         const data=res._getJSONData();
-        expect(res.status).toBe(200);
-        expect(data.expenses).toHaveLength(1);
-        expect(data.expenses).toHaveBeenCalled();
+        expect(res.statusCode).toBe(200);
+        expect(data).toEqual(expenses[0])
     })
 })
 
@@ -83,15 +83,16 @@ describe('Expenses.updateById', () => {
 
     it("should update the expenses and returun a success message", async()=>{
 
-        const expensesMock={
+        const expenseMock={
+            ...expenses[0],
             update:jest.fn().mockResolvedValue(true)
         }
 
         const req=createRequest({
             method:'PUT',
             url:'/api/budgets/:budgetId/expenses/:expenseId',
-            expenses:expensesMock,
-            body: { name:"Pollo",amount:600}
+            expense:expenseMock,
+            body: { name:"Updated Expenses", amount:600}
         })
 
         const res=createResponse();
@@ -100,9 +101,9 @@ describe('Expenses.updateById', () => {
 
         expect(res.statusCode).toBe(200);
         expect(data).toBe("Se actualizo Correctamente el gasto");
-        expect(expensesMock.update).toHaveBeenCalled();
-        expect(expensesMock.update).toHaveBeenCalledTimes(1);
-        expect(expensesMock.update).toHaveBeenCalledWith(req.body);
+        expect(expenseMock.update).toHaveBeenCalled();
+        expect(expenseMock.update).toHaveBeenCalledTimes(1);
+        expect(expenseMock.update).toHaveBeenCalledWith(req.body);
         
     })
 

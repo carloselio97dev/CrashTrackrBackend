@@ -1,14 +1,12 @@
 import  { Request, RequestHandler, Response } from "express";
-import  jwt  from 'jsonwebtoken';
 import User from "../models/User";
 import { checkPassword, hashPassword } from "../utils/auth";
 import { generateToken } from "../utils/token";
 import { AuthEmail } from "../emails/Authemail";
 import { generateJWT } from "../utils/jwt";
-import { autenticate } from "../middleware/auth";
 
 export class AuthController {
-    static createAccount:RequestHandler = async (req: Request, res: Response)=> {
+    static createAccount = async (req: Request, res: Response)=> {
 
             const {email, password,token}= req.body;
             //Prevent duplicate email
@@ -20,7 +18,7 @@ export class AuthController {
 
             }
             try {
-                const user = new User(req.body);
+                const user =await  User.create(req.body);
                 user.password= await hashPassword(password)
                 user.token= generateToken();
                 await user.save()

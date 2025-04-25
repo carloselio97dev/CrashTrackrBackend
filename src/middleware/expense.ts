@@ -52,6 +52,6 @@ export const validateExpenseExist = async (req: Request, res: Response, next: Ne
 
     } catch (error) {
         //console.log(error);
-        res.status(500).json({ error: "Error al crear el presupuesto" });
+        res.status(500).json({ error: "Hubo un error" });
     }
 }
