@@ -20,7 +20,15 @@ export class AuthController {
             try {
                 const user =await  User.create(req.body);
                 user.password= await hashPassword(password)
-                user.token= generateToken();
+                const token= generateToken();
+                user.token=token;
+
+                //Variables Globlales en NODE
+                if(process.env.NODE_ENV !=='production'){
+                    globalThis.cashTrackrConfirmationToken=token;
+                }
+
+
                 await user.save()
 
                 await AuthEmail.sendConfirmationEmail({
@@ -29,12 +37,12 @@ export class AuthController {
                         token:user.token
                 })
 
-                res.json({ msg: 'Cuenta Creada Correctamente' });
+                res.status(201).json({ msg: 'Cuenta Creada Correctamente' });
                 return;
 
                
             } catch (error) {
-                //console.log(error);
+                console.log(error);
                 res.status(500).json({ error: 'Hubo un Error' });
                 return;
             }
@@ -55,7 +63,7 @@ export class AuthController {
             res.json("Cuenta Confirmada Correctamente");
             return;
     }
-    static login:RequestHandler = async (req: Request, res: Response)=> {
+    static login = async (req: Request, res: Response)=> {
           const {email, password}=req.body;
           const user= await User.findOne({where:{email}});
             if(!user){
