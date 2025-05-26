@@ -7,7 +7,6 @@ import Expense from '../models/Expense';
 export class BudgetController {
    
     static getAll = async (req: Request, res: Response) => {
-        console.log("Hola");
         try {
             const budgets = await Budget.findAll({
                 order: [
@@ -29,9 +28,8 @@ export class BudgetController {
         try {
             const budget = await  Budget.create(req.body);
             budget.userId=req.user!.id;
-
             await budget.save();
-            res.status(201).json('Presupuesto Creado con Correctamente');
+            res.status(201).json({msg:'Presupuesto Creado con Correctamente'});
 
         } catch (error) {
             console.log(error);
@@ -54,13 +52,13 @@ export class BudgetController {
          //Escribir los cambios del Body 
          await req.budget.update(req.body);
          //Guardar los cambios en la base de datos
-         res.json('Presupuesto Actualizado Correctamente')
+         res.json({msg:'Presupuesto Actualizado Correctamente'})
 
     }
     static deleteById = async (req: Request, res: Response) => {
         //Eliminar el presupuesto
         await req.budget.destroy();
-        res.json('Presupuesto Eliminado Correctamente');
+        res.json({msg:'Presupuesto Eliminado Correctamente'});
 
     }
 }

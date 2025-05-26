@@ -17,9 +17,9 @@ router.post('/create-account',
 
 
 router.post('/confirm-account',
-    body('token').notEmpty()
+    body('token')
         .isLength({ min: 6, max: 6 })
-        .withMessage('Toke no Valido'),
+        .withMessage('Token no Valido'),
     handleInputsErrors,
     AuthController.confirmAccount)
 
@@ -66,5 +66,11 @@ router.post('/check-password',
     body('password').notEmpty().withMessage('El password actual no puede estar vacio'),
     handleInputsErrors,
     AuthController.checkPassword)
+
+router.put('/user', 
+    body('name').notEmpty().withMessage('El Nombre no  puede estar vacio'),
+    body('email').notEmpty().withMessage('El Email no  puede estar vacio'),
+    handleInputsErrors,
+    autenticate, AuthController.updateUserInfo);
 
 export default router;

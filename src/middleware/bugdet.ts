@@ -13,8 +13,8 @@ declare global {
 export const validateBugdetId = async (req: Request, res: Response, next: NextFunction) => {
     // Validar que el ID del presupuesto sea un entero positivo  y que exista en la base de datos
     await param('budgetId')
-        .isInt().withMessage('El ID del Presupuesto no es Valido')
-        .custom((value) => value > 0).withMessage('Id no Valido')
+        .isInt().withMessage('El ID del Presupuesto no es Valido').bail()
+        .custom((value) => value > 0).withMessage('Id no Valido').bail()
         .run(req);
     let errors = validationResult(req)
     if (!errors.isEmpty()) {
