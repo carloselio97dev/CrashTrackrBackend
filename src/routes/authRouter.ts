@@ -67,4 +67,10 @@ router.post('/check-password',
     handleInputsErrors,
     AuthController.checkPassword)
 
+router.put('/user', 
+    body('name').notEmpty().withMessage('El Nombre no  puede estar vacio'),
+    body('email').notEmpty().withMessage('El Email no  puede estar vacio'),
+    handleInputsErrors,
+    autenticate, AuthController.updateUserInfo);
+
 export default router;

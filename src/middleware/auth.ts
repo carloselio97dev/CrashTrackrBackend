@@ -19,6 +19,7 @@ export const autenticate = async (req:Request, res:Response, next:NextFunction) 
         }
 
         const [,token]= bearer.split(' ');
+     
         if(!token){
             const error=new Error('Token no valido')
             res.status(401).json({error: error.message})

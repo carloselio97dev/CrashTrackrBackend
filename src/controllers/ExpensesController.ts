@@ -8,7 +8,9 @@ export class ExpensesController {
                 const expense = await  Expense.create(req.body);
                 expense.budgetId=req.budget.id
                 await expense.save();
-                res.status(201).json('Gasto Agregado Correctamente')
+                res.status(201).json({
+                     msg:'Gasto Agregado Correctamente'
+       })
          } catch (error) {
                 console.log(error);
                 res.status(500).json({error:"Error al crear el gasto"})
@@ -21,11 +23,11 @@ export class ExpensesController {
 
     static updateById = async (req: Request, res: Response) => {
              await  req.expense.update(req.body)
-             res.json("Se actualizo Correctamente el gasto");
+             res.json({msg:"Se actualizo Correctamente el gasto"});
     }
   
     static deleteById = async (req: Request, res: Response) => {
           await req.expense.destroy();
-          res.json("Gasto eliminado");
+          res.json({msg:"Gasto eliminado"});
     }
 }
